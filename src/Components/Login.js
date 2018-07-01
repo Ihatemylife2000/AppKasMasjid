@@ -10,22 +10,22 @@ import {
   Text,
   Spinner,
   Header,
-  Title,
-  Body,
-  Left,
-  Right
+  Thumbnail
 } from "native-base";
 import { StyleSheet, AsyncStorage, ToastAndroid } from "react-native";
-import axios from "axios";
 import { LOGIN_URL } from "../Config/URLs";
 import { loginRequest, loginSuccess, loginFailure } from "../Actions";
 import { connect } from "react-redux";
+import axios from "axios";
 
 class Login extends Component {
-  state = {
-    email: "",
-    password: ""
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: "",
+      password: ""
+    };
+  }
 
   componentDidMount() {
     const { authSuccess, authFailure } = this.props;
@@ -59,6 +59,7 @@ class Login extends Component {
     axios.post(LOGIN_URL, postData)
     .then(response => {
       authSuccess(response.data);
+      ToastAndroid.show("Anda berhasil masuk", ToastAndroid.SHORT);
     })
     .catch(error => {
       authFailure();
@@ -76,8 +77,19 @@ class Login extends Component {
       <Container style={styles.container}>
         <Content>
           {auth.loading ?
-            <Spinner color="#527A52" /> :
+            <Spinner color="#00898e" /> :
             <Form>
+              <Thumbnail
+                square
+                style={{
+                  width: 200,
+                  height: 200,
+                  flex: 1,
+                  alignSelf: "center",
+                  marginBottom: 20
+                }}
+                source={require("./mosque.png")}
+              />
               <Item style={styles.mb20}>
                 <Icon name="mail" style={styles.primary} />
                 <Input
@@ -133,7 +145,7 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   primary: {
-    color: "#527A52"
+    color: "#00898e"
   }
 });
 

@@ -59,7 +59,7 @@ class User extends Component {
           position="bottomRight"
           useForeground
           background={TouchableNativeFeedback.Ripple("rgba(256, 256, 256, 0.3)", true)}
-          style={{ backgroundColor: "#527A52" }}
+          style={{ backgroundColor: "#00898e" }}
           onPress={() => navigation.navigate("EntryUser")}
         >
           <Icon name="add" />

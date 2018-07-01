@@ -16,9 +16,12 @@ import {
 import { connect } from "react-redux";
 
 class SearchCat extends Component {
-  state = {
-    searchText: ""
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      searchText: ""
+    };
+  }
 
   componentDidMount() {
     this.inputSearch._root.focus();

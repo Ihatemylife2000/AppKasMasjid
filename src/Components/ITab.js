@@ -4,7 +4,6 @@ import {
   Content,
   Icon,
   Text,
-  Header,
   Title,
   Left,
   Right,
@@ -12,12 +11,7 @@ import {
   Card,
   CardItem
 } from "native-base";
-import {
-  StyleSheet,
-  TouchableNativeFeedback,
-  AsyncStorage
-} from "react-native";
-import dateFormat from "dateformat";
+import { StyleSheet, TouchableNativeFeedback } from "react-native";
 import { connect } from "react-redux";
 import "intl";
 import "intl/locale-data/jsonp/id";
@@ -39,8 +33,8 @@ class ITab extends Component {
     const { categories } = this.props;
     const balance = datas.reduce((a, b) => {
       const cat = categories.find(cat => cat.id === b.categories_id);
-      const amount = cat.type === 1 ? b.amount : -b.amount;
-      return amount + a;
+      const value = cat.type === 1 ? b.value : -b.value;
+      return value + a;
     }, 0);
 
     return balance;
@@ -50,8 +44,8 @@ class ITab extends Component {
     const { categories } = this.props;
     const income = datas.reduce((a, b) => {
       const cat = categories.find(cat => cat.id === b.categories_id);
-      const amount = cat.type === 1 ? b.amount : 0;
-      return amount + a;
+      const value = cat.type === 1 ? b.value : 0;
+      return value + a;
     }, 0);
 
     return income;
@@ -61,8 +55,8 @@ class ITab extends Component {
     const { categories } = this.props;
     const expense = datas.reduce((a, b) => {
       const cat = categories.find(cat => cat.id === b.categories_id);
-      const amount = cat.type === 2 ? b.amount : 0;
-      return amount + a;
+      const value = cat.type === 2 ? b.value : 0;
+      return value + a;
     }, 0);
 
     return expense;
@@ -112,17 +106,13 @@ class ITab extends Component {
 
     const sorted = grouped ?
       Object.keys(grouped)
-      .sort((a, b) => {
-        return new Date(b) - new Date(a)
-      })
-      .reduce((obj, key) => {
-        return {
-          ...obj,
-          [key]: grouped[key]
-        }
-      }, null) : null;
+      .sort((a, b) => new Date(b) - new Date(a))
+      .reduce((obj, key) => ({
+        ...obj,
+        [key]: grouped[key]
+      }), null) : null;
 
-    return { filtered, grouped, sorted };
+    return { filtered, sorted };
   }
 
   empty() {
@@ -211,10 +201,10 @@ class ITab extends Component {
                 <CardItem
                   bordered
                   style={{ paddingTop: -8, paddingBottom: -8 }}>
+                  <Text style={{ fontSize: 35 }}>
+                    {day.format(new Date(date))}
+                  </Text>
                   <Left style={{ flex: 4 }}>
-                    <Text style={{ fontSize: 35 }}>
-                      {day.format(new Date(date))}
-                    </Text>
                     <Body>
                       <Text>
                         {weekday.format(new Date(date))}
@@ -243,12 +233,10 @@ class ITab extends Component {
                         })}
                       >
                         <CardItem>
-                          <Left style={{ flex: 3 }}>
-                            <Body>
-                              <Text>{cat.name}</Text>
-                              <Text note>{dat.description}</Text>
-                            </Body>
-                          </Left>
+                          <Body>
+                            <Text>{cat.name}</Text>
+                            <Text note>{dat.description}</Text>
+                          </Body>
                           <Right style={{ flex: 3 }}>
                             <Text
                               style={{
@@ -256,7 +244,7 @@ class ITab extends Component {
                                   ? "#1F88A7"
                                   : "#B9264F"
                               }}>
-                              {l10nIDR.format(dat.amount)}
+                              {l10nIDR.format(dat.value)}
                             </Text>
                           </Right>
                         </CardItem>
@@ -282,11 +270,8 @@ const styles = StyleSheet.create({
     paddingRight: 30
   },
   card: {
-    flex: 0,
     marginTop: 0,
-    marginBottom: 15,
-    marginLeft: 0,
-    marginRight: 0
+    marginBottom: 15
   }
 });
 

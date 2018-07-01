@@ -18,8 +18,7 @@ import {
 import {
   StyleSheet,
   TouchableNativeFeedback,
-  DatePickerAndroid,
-  ToastAndroid
+  DatePickerAndroid
 } from "react-native";
 import { connect } from "react-redux";
 import "intl";
@@ -68,8 +67,8 @@ class Report extends Component {
     const { categories } = this.props;
     const balance = datas.reduce((a, b) => {
       const cat = categories.find(cat => cat.id === b.categories_id);
-      const amount = cat.type === 1 ? b.amount : -b.amount;
-      return amount + a;
+      const value = cat.type === 1 ? b.value : -b.value;
+      return value + a;
     }, 0);
 
     return balance;
@@ -79,8 +78,8 @@ class Report extends Component {
     const { categories } = this.props;
     const income = datas.reduce((a, b) => {
       const cat = categories.find(cat => cat.id === b.categories_id);
-      const amount = cat.type === 1 ? b.amount : 0;
-      return amount + a;
+      const value = cat.type === 1 ? b.value : 0;
+      return value + a;
     }, 0);
 
     return income;
@@ -90,8 +89,8 @@ class Report extends Component {
     const { categories } = this.props;
     const expense = datas.reduce((a, b) => {
       const cat = categories.find(cat => cat.id === b.categories_id);
-      const amount = cat.type === 2 ? b.amount : 0;
-      return amount + a;
+      const value = cat.type === 2 ? b.value : 0;
+      return value + a;
     }, 0);
 
     return expense;
@@ -174,12 +173,10 @@ class Report extends Component {
                     onPress={() => navigation.navigate("DetailReport", {date})}
                   >
                     <CardItem>
-                      <Left style={{ flex: 1 }}>
-                        <Body>
-                          <Text>{month.format(date)}</Text>
-                          <Text note>{year.format(date)}</Text>
-                        </Body>
-                      </Left>
+                      <Body>
+                        <Text>{month.format(date)}</Text>
+                        <Text note>{year.format(date)}</Text>
+                      </Body>
                       <Right style={{ flex: 2 }}>
                         <Text style={{ color: "#1F88A7" }}>
                           {l10nIDR.format(income)}
@@ -188,7 +185,7 @@ class Report extends Component {
                           {l10nIDR.format(expense)}
                         </Text>
                       </Right>
-                      <Right style={{ flex: 2 }}>
+                      <Right style={{ flex: 2.5 }}>
                         <Text style={{ fontSize: 15 }}>
                           {l10nIDR.format(balance)}
                         </Text>
@@ -207,11 +204,8 @@ class Report extends Component {
 
 const styles = StyleSheet.create({
   card: {
-    flex: 0,
     marginTop: 0,
-    marginBottom: 15,
-    marginLeft: 0,
-    marginRight: 0
+    marginBottom: 15
   }
 });
 

@@ -21,10 +21,11 @@ import {
   DatePickerAndroid,
   ToastAndroid
 } from "react-native";
-import dateFormat from "dateformat";
-import axios from "axios";
 import { TRANSACTIONS_URL } from "../Config/URLs";
 import { connect } from "react-redux";
+import { logout } from "../Actions";
+import dateFormat from "dateformat";
+import axios from "axios";
 import "intl";
 import "intl/locale-data/jsonp/id";
 
@@ -36,14 +37,17 @@ const datef = new Intl.DateTimeFormat("id-ID", {
 });
 
 class EditTrans extends Component {
-  state = {
-    date: dateFormat(new Date(), "yyyy-mm-dd"),
-    description: "",
-    amount: "",
-    categories_id: null,
-    categories_type: 0,
-    categories_name: "Kategori"
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      date: dateFormat(new Date(), "yyyy-mm-dd"),
+      description: "",
+      value: "",
+      categories_id: null,
+      categories_type: 0,
+      categories_name: "Kategori"
+    };
+  }
 
   componentDidUpdate(prevProps) {
     const { transactions, navigation } = this.props;
@@ -75,13 +79,13 @@ class EditTrans extends Component {
     });
   }
 
-  validateAmount = () => this.state.amount === "" || this.state.amount === 0;
+  validateValue = () => this.state.value === "" || this.state.value === 0;
 
   validateCategories = () => this.state.categories_id === null;
 
   onUpdate = () => {
     const { navigation, auth } = this.props;
-    if(this.validateAmount()) {
+    if(this.validateValue()) {
       ToastAndroid.show("Nominal uang tidak boleh kosong atau 0 (nol)", ToastAndroid.SHORT);
       return;
     } else if(this.validateCategories()) {
@@ -92,7 +96,7 @@ class EditTrans extends Component {
     const putData = {
       date: this.state.date,
       description: this.state.description,
-      amount: this.state.amount,
+      value: this.state.value,
       categories_id: this.state.categories_id
     };
 
@@ -110,6 +114,9 @@ class EditTrans extends Component {
     .catch(error => {
       if(!error.response) {
         ToastAndroid.show("Tidak bisa terhubung ke server", ToastAndroid.SHORT);
+      } else if(error.response.status === 401) {
+        ToastAndroid.show("Autentikasi gagal", ToastAndroid.SHORT);
+        logout();
       }
     });
   };
@@ -160,14 +167,14 @@ class EditTrans extends Component {
                 <Input
                   keyboardType="numeric"
                   style={{
-                    color: this.state.categories_type === 0 ? "#527A52"
+                    color: this.state.categories_type === 0 ? "#00898e"
                       : this.state.categories_type === 1 ? "#1F88A7"
                           : "#B9264F"
                   }}
                   placeholder="Rp0"
-                  value={this.state.amount.toString()}
-                  onChangeText={amount => this.setState({
-                    amount: parseInt(amount) || ""
+                  value={this.state.value.toString()}
+                  onChangeText={value => this.setState({
+                    value: parseInt(value) || ""
                   })}
                 />
               </Item>
@@ -219,11 +226,8 @@ class EditTrans extends Component {
 
 const styles = StyleSheet.create({
   card: {
-    flex: 0,
     marginTop: 0,
-    marginBottom: 15,
-    marginLeft: 0,
-    marginRight: 0
+    marginBottom: 15
   },
   icon: {
     width: 30,
@@ -235,6 +239,10 @@ const mapStateToProps = state => ({
   transactions: state.transactions,
   categories: state.categories,
   auth: state.auth
+});
+
+const mapDispatchToProps = dispatch => ({
+  logout: () => dispatch(logout())
 });
 
 export default connect(

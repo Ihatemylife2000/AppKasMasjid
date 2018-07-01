@@ -8,16 +8,19 @@ import {
   Header,
   Icon,
   Left,
+  Thumbnail,
+  Body
 } from "native-base";
 import { StyleSheet } from "react-native";
-import { logout } from "../Actions";
 import { connect } from "react-redux";
+import { logout } from "../Actions";
 
 const routes = [
   { label: "Transaksi", icon: "swap", screen: "Trans" },
   { label: "Laporan", icon: "stats", screen: "Report" },
   { label: "Kategori", icon: "apps", screen: "CategoriesMan" },
-  { label: "Pengurus", icon: "people", screen: "User" }
+  { label: "Pengurus", icon: "people", screen: "User" },
+  { label: "Keluar", icon: "log-out", screen: "Login" }
 ];
 
 class SideBar extends Component {
@@ -32,7 +35,16 @@ class SideBar extends Component {
     const { navigation, auth, logout, user } = this.props;
     return (
       <Container>
-        <Header noShadow span />
+        <Header noShadow span>
+          <Body>
+            <Thumbnail
+              large
+              square
+              style={{ alignSelf: "center" }}
+              source={require("./circle_mosque.png")}
+            />
+          </Body>
+        </Header>
         <Content
           bounces={false}
           style={{ flex: 1, top: -1 }}
@@ -40,11 +52,16 @@ class SideBar extends Component {
           <List
             dataArray={routes}
             renderRow={(item, index) =>
-              (item.screen === "UserStack" ? auth.role && auth.role.id === 1 : true) &&
+              (item.screen === "User" ? auth.role && auth.role.id === 1 : true) &&
                 <ListItem
                   button
                   noBorder
-                  onPress={() => navigation.navigate(item.screen)}
+                  onPress={() => {
+                    if(item.screen === "Login")
+                      logout();
+                    else
+                      navigation.navigate(item.screen);
+                  }}
                   key={index}
                 >
                   <Left>
@@ -60,20 +77,6 @@ class SideBar extends Component {
             }
           >
           </List>
-          <ListItem
-            button
-            noBorder
-            onPress={() => logout()}>
-            <Left>
-              <Icon
-                name="log-out"
-                style={{ color: "#777", fontSize: 26, width: 30 }}
-              />
-              <Text style={styles.text}>
-                Keluar
-              </Text>
-            </Left>
-          </ListItem>
         </Content>
       </Container>
     );

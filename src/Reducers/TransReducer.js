@@ -6,6 +6,8 @@ const transactions = (state = [], action) => {
       AsyncStorage.setItem("transactions", JSON.stringify(action.payload.data));
       return [...action.payload.data];
     case "ADD_TRANSACTION":
+      if(state.find(trans => trans.id === action.payload.data.id))
+        return state;
       const add = [
         ...state,
         action.payload.data
@@ -17,9 +19,10 @@ const transactions = (state = [], action) => {
       AsyncStorage.setItem("transactions", JSON.stringify(remove));
       return remove;
     case "UPDATE_TRANSACTION":
+      const list_id = action.payload.data.map(trans => trans.id);
       const update = state.map(trans =>
-        trans.id === action.payload.id
-          ? {...trans, ...action.payload.data}
+        list_id.includes(trans.id)
+          ? {...trans, ...action.payload.data.find(data => data.id === trans.id)}
           : trans
       );
       AsyncStorage.setItem("transactions", JSON.stringify(update));

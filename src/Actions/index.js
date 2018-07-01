@@ -23,6 +23,11 @@ export const addUser = data => ({
   payload: { data }
 });
 
+export const updateUser = data => ({
+  type: "UPDATE_USER",
+  payload: { data }
+});
+
 export const addTransaction = data => ({
   type: "ADD_TRANSACTION",
   payload: { data }
@@ -38,9 +43,9 @@ export const removeUser = id => ({
   payload: { id }
 });
 
-export const updateTransaction = (id, data) => ({
+export const updateTransaction = data => ({
   type: "UPDATE_TRANSACTION",
-  payload: { id, data }
+  payload: { data }
 });
 
 export const loginSuccess = auth => ({

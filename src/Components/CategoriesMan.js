@@ -67,7 +67,7 @@ class CategoriesMan extends Component {
         </Content>
         <Fab
           direction="up"
-          style={{ backgroundColor: "#527A52" }}
+          style={{ backgroundColor: "#00898e" }}
           position="bottomRight"
           useForeground
           background={TouchableNativeFeedback.Ripple("rgba(256, 256, 256, 0.3)", true)}

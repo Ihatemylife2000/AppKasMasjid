@@ -6,6 +6,8 @@ const user = (state = [], action) => {
       AsyncStorage.setItem("user", JSON.stringify(action.payload.data));
       return [...action.payload.data];
     case "ADD_USER":
+      if(state.find(user => user.id === action.payload.data.id))
+        return state;
       const add = [
         ...state,
         action.payload.data
@@ -17,9 +19,10 @@ const user = (state = [], action) => {
       AsyncStorage.setItem("user", JSON.stringify(remove));
       return remove;
     case "UPDATE_USER":
+      const list_id = action.payload.data.map(user => user.id);
       const update = state.map(user =>
-        user.id === action.payload.id
-          ? {...user, ...action.payload.data}
+        list_id.includes(user.id)
+          ? {...user, ...action.payload.data.find(data => data.id === user.id)}
           : user
       );
       AsyncStorage.setItem("user", JSON.stringify(update));

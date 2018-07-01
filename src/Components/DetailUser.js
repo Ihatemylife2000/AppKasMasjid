@@ -14,9 +14,10 @@ import {
   CardItem
 } from "native-base";
 import { StyleSheet, Alert, ToastAndroid } from "react-native";
-import axios from "axios";
 import { USER_URL } from "../Config/URLs";
 import { connect } from "react-redux";
+import { logout } from "../Actions";
+import axios from "axios";
 
 class DetailUser extends Component {
   componentDidUpdate(prevProps) {
@@ -30,7 +31,7 @@ class DetailUser extends Component {
   }
 
   onRemove = () => {
-    const { navigation, auth } = this.props;
+    const { navigation, auth, logout } = this.props;
     const deleteHeader = {
       headers: {
         Authorization : `Bearer ${auth.access_token}`
@@ -46,6 +47,9 @@ class DetailUser extends Component {
     .catch(error => {
       if(!error.response) {
         ToastAndroid.show("Tidak bisa terhubung ke server", ToastAndroid.SHORT);
+      } else if(error.response.status === 401) {
+        ToastAndroid.show("Autentikasi gagal", ToastAndroid.SHORT);
+        logout();
       }
     });
   };
@@ -70,6 +74,13 @@ class DetailUser extends Component {
           </Left>
           <Body style={{ flex: 3 }} />
           <Right style={{ flex: 1 }}>
+            <Button
+              onPress={() => navigation.navigate("EditUser", {id})}
+              transparent
+              rounded
+            >
+              <Icon name="create" />
+            </Button>
             <Button
               onPress={() => Alert.alert(
                 "Hapus Pengurus",
@@ -114,11 +125,8 @@ class DetailUser extends Component {
 
 const styles = StyleSheet.create({
   card: {
-    flex: 0,
     marginTop: 0,
-    marginBottom: 15,
-    marginLeft: 0,
-    marginRight: 0
+    marginBottom: 15
   },
   icon: {
     width: 30,
@@ -131,7 +139,11 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
+const mapDispatchToProps = dispatch => ({
+  logout: () => dispatch(logout())
+});
+
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(DetailUser);

@@ -1,20 +1,4 @@
 import React, { Component } from "react";
-import { Root } from "native-base";
-import Login from "./Components/Login";
-import Trans from "./Components/Trans";
-import User from "./Components/User";
-import EntryTrans from "./Components/EntryTrans";
-import DetailTrans from "./Components/DetailTrans";
-import EditTrans from "./Components/EditTrans";
-import Report from "./Components/Report";
-import Categories from "./Components/Categories";
-import CategoriesMan from "./Components/CategoriesMan";
-import EntryCat from "./Components/EntryCat";
-import SearchCat from "./Components/SearchCat";
-import EntryUser from "./Components/EntryUser";
-import DetailUser from "./Components/DetailUser";
-import DetailReport from "./Components/DetailReport";
-import SideBar from "./Components/SideBar";
 import {
   createStackNavigator,
   createSwitchNavigator,
@@ -27,10 +11,28 @@ import {
   addCategory,
   addUser,
   updateTransaction,
+  updateUser,
   logout
 } from "./Actions";
-import Pusher from "pusher-js/react-native";
 import { connect } from "react-redux";
+import { Root } from "native-base";
+import CategoriesMan from "./Components/CategoriesMan";
+import Categories from "./Components/Categories";
+import SearchCat from "./Components/SearchCat";
+import EntryCat from "./Components/EntryCat";
+import Trans from "./Components/Trans";
+import DetailTrans from "./Components/DetailTrans";
+import EntryTrans from "./Components/EntryTrans";
+import EditTrans from "./Components/EditTrans";
+import Report from "./Components/Report";
+import DetailReport from "./Components/DetailReport";
+import Login from "./Components/Login";
+import User from "./Components/User";
+import DetailUser from "./Components/DetailUser";
+import EntryUser from "./Components/EntryUser";
+import EditUser from "./Components/EditUser";
+import SideBar from "./Components/SideBar";
+import Pusher from "pusher-js/react-native";
 
 const TransStack = createStackNavigator(
   {
@@ -89,7 +91,8 @@ const UserStack = createStackNavigator(
   {
     User: { screen: User },
     DetailUser: { screen: DetailUser },
-    EntryUser: { screen: EntryUser }
+    EntryUser: { screen: EntryUser },
+    EditUser: { screen: EditUser }
   },
   {
     headerMode: "none",
@@ -128,6 +131,7 @@ class App extends Component {
   componentWillMount() {
     const {
       updateTransaction,
+      updateUser,
       removeTransaction,
       removeUser,
       addTransaction,
@@ -152,23 +156,26 @@ class App extends Component {
           removeTransaction(data.payload.id);
           break;
         case "DELETE_USER":
-          if(this.props.auth.role && this.props.auth.role.id === 1)
-            removeUser(data.payload.id);
-          else if(this.props.auth.role && this.props.auth.role.id === 2)
+          removeUser(data.payload.id);
+          if(this.props.auth.id === data.payload.id)
             logout();
           break;
         case "ADD_TRANS":
           addTransaction(data.payload.data);
           break;
         case "UPDATE_TRANS":
-          updateTransaction(data.payload.id, data.payload.data);
+          updateTransaction(data.payload.data);
+          break;
+        case "UPDATE_USER":
+          updateUser(data.payload.data);
+          if(this.props.auth.id === data.payload.id)
+            logout();
           break;
         case "ADD_CATEGORY":
           addCategory(data.payload.data);
           break;
         case "ADD_USER":
-          if(this.props.auth.role && this.props.auth.role.id === 1)
-            addUser(data.payload.data);
+          addUser(data.payload.data);
           break;
       }
     });
@@ -193,7 +200,8 @@ const mapDispatchToProps = dispatch => ({
   addTransaction: data => dispatch(addTransaction(data)),
   addCategory: data => dispatch(addCategory(data)),
   addUser: data => dispatch(addUser(data)),
-  updateTransaction: (id, data) => dispatch(updateTransaction(id, data)),
+  updateUser: data => dispatch(updateUser(data)),
+  updateTransaction: data => dispatch(updateTransaction(data)),
   logout: () => dispatch(logout())
 });
 

@@ -15,13 +15,17 @@ import {
   ScrollableTab,
   Fab
 } from "native-base";
-import { StyleSheet, AsyncStorage, Alert, ToastAndroid, TouchableNativeFeedback } from "react-native";
+import {
+  AsyncStorage,
+  ToastAndroid,
+  TouchableNativeFeedback
+} from "react-native";
+import { TRANSACTIONS_URL, CATEGORIES_URL, USER_URL } from "../Config/URLs";
+import { setTransaction, setCategory, setUser, logout } from "../Actions";
+import { connect } from "react-redux";
 import dateFormat from "dateformat";
 import axios from "axios";
-import { TRANSACTIONS_URL, CATEGORIES_URL, USER_URL } from "../Config/URLs";
-import { setTransaction, setCategory, setUser } from "../Actions";
 import ITab from "./ITab";
-import { connect } from "react-redux";
 import "intl";
 import "intl/locale-data/jsonp/id";
 
@@ -36,7 +40,8 @@ class Trans extends Component {
       auth,
       setTransaction,
       setCategory,
-      setUser
+      setUser,
+      logout
     } = this.props;
 
     AsyncStorage.getItem("categories").then(item => {
@@ -73,6 +78,9 @@ class Trans extends Component {
     .catch(error => {
       if(!error.response) {
         ToastAndroid.show("Tidak bisa terhubung ke server", ToastAndroid.SHORT);
+      } else if(error.response.status === 401) {
+        ToastAndroid.show("Autentikasi gagal", ToastAndroid.SHORT);
+        logout();
       }
     });
 
@@ -83,19 +91,24 @@ class Trans extends Component {
     .catch(error => {
       if(!error.response) {
         ToastAndroid.show("Tidak bisa terhubung ke server", ToastAndroid.SHORT);
+      } else if(error.response.status === 401) {
+        ToastAndroid.show("Autentikasi gagal", ToastAndroid.SHORT);
+        logout();
       }
     })
 
-    if(auth.role.id === 1)
-      axios.get(USER_URL, getHeader)
-      .then(response => {
-        setUser(response.data);
-      })
-      .catch(error => {
-        if(!error.response) {
-          ToastAndroid.show("Tidak bisa terhubung ke server", ToastAndroid.SHORT);
-        }
-      });
+    axios.get(USER_URL, getHeader)
+    .then(response => {
+      setUser(response.data);
+    })
+    .catch(error => {
+      if(!error.response) {
+        ToastAndroid.show("Tidak bisa terhubung ke server", ToastAndroid.SHORT);
+      } else if(error.response.status === 401) {
+        ToastAndroid.show("Autentikasi gagal", ToastAndroid.SHORT);
+        logout();
+      }
+    });
   }
 
   getBalance() {
@@ -113,8 +126,8 @@ class Trans extends Component {
 
     const balance = filtered.reduce((a, b) => {
       const cat = categories.find(cat => cat.id === b.categories_id);
-      const amount = cat.type === 1 ? b.amount : -b.amount;
-      return amount + a;
+      const value = cat.type === 1 ? b.value : -b.value;
+      return value + a;
     }, 0);
 
     return balance;
@@ -200,7 +213,7 @@ class Trans extends Component {
           containerStyle={{ left: "50%", right: null, marginRight: "-50%" }}
           useForeground
           background={TouchableNativeFeedback.Ripple("rgba(256, 256, 256, 0.3)", true)}
-          style={{ backgroundColor: "#527A52" }}
+          style={{ backgroundColor: "#00898e" }}
           position="bottomRight"
           onPress={() => navigation.navigate("EntryTrans")}
         >
@@ -219,8 +232,9 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   setTransaction: data => dispatch(setTransaction(data)),
+  setCategory: data => dispatch(setCategory(data)),
   setUser: data => dispatch(setUser(data)),
-  setCategory: data => dispatch(setCategory(data))
+  logout: () => dispatch(logout())
 });
 
 export default connect(

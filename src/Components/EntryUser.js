@@ -15,35 +15,30 @@ import {
   Card,
   CardItem
 } from "native-base";
-import {
-  TouchableNativeFeedback,
-  StyleSheet,
-  DatePickerAndroid,
-  ToastAndroid
-} from "react-native";
-import dateFormat from "dateformat";
-import axios from "axios";
+import { StyleSheet, ToastAndroid } from "react-native";
 import { USER_URL } from "../Config/URLs";
 import { connect } from "react-redux";
+import { logout } from "../Actions";
+import axios from "axios";
 
 class EntryUser extends Component {
-  state = {
-    name: "",
-    email: "",
-    password: "",
-    c_password: ""
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: "",
+      email: "",
+      password: ""
+    };
+  }
 
   validateName = () => this.state.name === "";
 
-  validateEmail = () => !/[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}/igm.test(this.state.email);
+  validateEmail = () => !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(this.state.email);
 
   validatePasswordLength = () => this.state.password.length < 6;
 
-  validatePassword = () => this.state.password !== this.state.c_password;
-
   onPost = () => {
-    const { navigation, auth } = this.props;
+    const { navigation, auth, logout } = this.props;
     if(this.validateName()) {
       ToastAndroid.show("Nama pengurus tidak boleh kosong", ToastAndroid.SHORT);
       return;
@@ -53,16 +48,12 @@ class EntryUser extends Component {
     } else if(this.validatePasswordLength()) {
       ToastAndroid.show("Panjang password minimal 6 karakter", ToastAndroid.SHORT);
       return;
-    } else if(this.validatePassword()) {
-      ToastAndroid.show("Konfirmasi password tidak cocok", ToastAndroid.SHORT);
-      return;
     }
 
     const postData = {
       name: this.state.name,
       email: this.state.email,
-      password: this.state.password,
-      c_password: this.state.c_password
+      password: this.state.password
     };
 
     const postHeader = {
@@ -79,6 +70,9 @@ class EntryUser extends Component {
     .catch(error => {
       if(!error.response) {
         ToastAndroid.show("Tidak bisa terhubung ke server", ToastAndroid.SHORT);
+      } else if(error.response.status === 401) {
+        ToastAndroid.show("Autentikasi gagal", ToastAndroid.SHORT);
+        logout();
       }
     });
   };
@@ -102,7 +96,7 @@ class EntryUser extends Component {
           </Body>
           <Right style={{ flex: 2 }}>
             <Button
-              onPress={() => this.onPost()}
+              onPress={this.onPost}
               hasText
               transparent
             >
@@ -147,18 +141,6 @@ class EntryUser extends Component {
                 />
               </Item>
             </CardItem>
-            <CardItem>
-              <Icon name="lock" style={styles.icon} />
-              <Item>
-                <Input
-                  autoCapitalize="none"
-                  placeholder="Ketik Ulang Password"
-                  value={this.state.c_password}
-                  secureTextEntry
-                  onChangeText={c_password => this.setState({c_password})}
-                />
-              </Item>
-            </CardItem>
           </Card>
         </Content>
       </Container>
@@ -168,11 +150,8 @@ class EntryUser extends Component {
 
 const styles = StyleSheet.create({
   card: {
-    flex: 0,
     marginTop: 0,
-    marginBottom: 15,
-    marginLeft: 0,
-    marginRight: 0
+    marginBottom: 15
   },
   icon: {
     width: 30,
@@ -184,7 +163,11 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
+const mapDispatchToProps = dispatch => ({
+  logout: () => dispatch(logout())
+});
+
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(EntryUser);

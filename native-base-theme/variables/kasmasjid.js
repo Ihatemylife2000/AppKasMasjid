@@ -15,9 +15,9 @@ export default {
 
   //Accordion
   headerStyle: "#edebed",
-  iconStyle: "#46484F",
+  iconStyle: "#000",
   contentStyle: "#f5f4f5",
-  expandedIconStyle: "#46484F",
+  expandedIconStyle: "#000",
   accordionBorderColor: "#d3d3d3",
 
   // Android
@@ -103,16 +103,19 @@ export default {
   checkboxTickColor: "#fff",
 
   // Color
-  brandPrimary: "#527A52",
+  brandPrimary: "#00898e",
   brandInfo: "#62B1F6",
   brandSuccess: "#5cb85c",
   brandDanger: "#d9534f",
   brandWarning: "#f0ad4e",
-  brandDark: "#46484F",
+  brandDark: "#000",
   brandLight: "#f4f4f4",
 
+  //Container
+  containerBgColor: "#fff",
+
   //Date Picker
-  datePickerTextColor: "#46484F",
+  datePickerTextColor: "#000",
   datePickerBg: "transparent",
 
   // Font
@@ -131,7 +134,7 @@ export default {
 
   // Footer
   footerHeight: 55,
-  footerDefaultBg: "#527A52",
+  footerDefaultBg: "#00898e",
   footerPaddingBottom: 0,
 
   // FooterTab
@@ -140,18 +143,18 @@ export default {
   activeTab: "#fff",
   sTabBarActiveTextColor: "#007aff",
   tabBarActiveTextColor: "#fff",
-  tabActiveBgColor: "#527A52",
+  tabActiveBgColor: "#00898e",
 
   // Header
   toolbarBtnColor: "#fff",
-  toolbarDefaultBg: "#527A52",
+  toolbarDefaultBg: "#00898e",
   toolbarHeight: 56,
   toolbarSearchIconSize: 23,
   toolbarInputColor: "#fff",
   searchBarHeight: platform === "ios" ? 30 : 40,
   searchBarInputHeight: platform === "ios" ? 40 : 50,
   toolbarBtnTextColor: "#fff",
-  toolbarDefaultBorder: "#527A52",
+  toolbarDefaultBorder: "#00898e",
   iosStatusbar: "light-content",
   get statusBarColor() {
     return color(this.toolbarDefaultBg)
@@ -197,7 +200,7 @@ export default {
   listItemPadding: 12,
   listNoteColor: "#808080",
   listNoteSize: 13,
-  listItemSelected: "#527A52",
+  listItemSelected: "#00898e",
 
   // Progress Bar
   defaultProgressColor: "#E4202D",
@@ -205,32 +208,27 @@ export default {
 
   // Radio Button
   radioBtnSize: 23,
-  radioSelectedColorAndroid: "#527A52",
+  radioSelectedColorAndroid: "#00898e",
   radioBtnLineHeight: 24,
   get radioColor() {
     return this.brandPrimary;
   },
 
   // Segment
-  segmentBackgroundColor: "#527A52",
+  segmentBackgroundColor: "#00898e",
   segmentActiveBackgroundColor: "#fff",
   segmentTextColor: "#fff",
-  segmentActiveTextColor: "#527A52",
+  segmentActiveTextColor: "#00898e",
   segmentBorderColor: "#fff",
-  segmentBorderColorMain: "#527A52",
+  segmentBorderColorMain: "#00898e",
 
   // Spinner
   defaultSpinnerColor: "#45D56E",
   inverseSpinnerColor: "#1A191B",
 
   // Tab
-  tabDefaultBg: "#527A52",
-  //topTabBarTextColor: "#d3d4d5",
-  get topTabBarTextColor() {
-    return color(this.tabDefaultBg)
-      .mix(color(this.topTabBarActiveTextColor), 0.3)
-      .hex();
-  },
+  tabDefaultBg: "#00898e",
+  topTabBarTextColor: "#8BC9CC",
   topTabBarActiveTextColor: "#fff",
   topTabBarBorderColor: "#fff",
   topTabBarActiveBorderColor: "#fff",
@@ -240,7 +238,7 @@ export default {
   tabFontSize: 15,
 
   // Text
-  textColor: "#46484F",
+  textColor: "#000",
   inverseTextColor: "#fff",
   noteFontSize: 14,
   get defaultTextColor() {

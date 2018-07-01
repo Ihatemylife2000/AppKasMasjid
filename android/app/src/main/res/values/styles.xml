@@ -7,13 +7,13 @@
         <item name="android:datePickerDialogTheme">@style/MyDatePickerDialogTheme</item>
 		<item name="android:alertDialogTheme">@style/MyAlertDialogTheme</item>
     </style>
-    
+
     <style name="MyDatePickerDialogTheme" parent="Theme.AppCompat.Light.Dialog">
-        <item name="colorAccent">#527A52</item>
-        <item name="android:textColorPrimary">#527A52</item>
+        <item name="colorAccent">#00898e</item>
+        <item name="android:textColorPrimary">#00898e</item>
     </style>
-	
+
 	<style name="MyAlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">#527A52</item>
+        <item name="colorAccent">#00898e</item>
     </style>
 </resources>

@@ -13,48 +13,78 @@ import {
   Right,
   Body,
   Card,
-  CardItem,
-  Radio
+  CardItem
 } from "native-base";
 import { StyleSheet, ToastAndroid } from "react-native";
-import { CATEGORIES_URL } from "../Config/URLs";
+import { USER_URL } from "../Config/URLs";
 import { connect } from "react-redux";
 import { logout } from "../Actions";
 import axios from "axios";
 
-class EntryCat extends Component {
+class EditUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
       name: "",
-      type: 1
+      email: "",
+      password: ""
     };
+  }
+
+  componentDidUpdate(prevProps) {
+    const { navigation, user } = this.props;
+    if (user !== prevProps.user) {
+      const id = navigation.getParam("id");
+      const data = user.find(data => data.id === id);
+      if(!data)
+        navigation.pop(2);
+    }
+  }
+
+  componentDidMount() {
+    const { navigation, user } = this.props;
+    const id = navigation.getParam("id");
+    const data = user.find(data => data.id === id);
+    this.setState({...data});
   }
 
   validateName = () => this.state.name === "";
 
-  onPost = () => {
+  validateEmail = () => !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(this.state.email);
+
+  validatePasswordLength = () => this.state.password.length < 6;
+
+  onUpdate = () => {
     const { navigation, auth, logout } = this.props;
     if(this.validateName()) {
-      ToastAndroid.show("Nama kategori tidak boleh kosong", ToastAndroid.SHORT);
+      ToastAndroid.show("Nama pengurus tidak boleh kosong", ToastAndroid.SHORT);
+      return;
+    } else if(this.validateEmail()) {
+      ToastAndroid.show("Format email tidak sesuai", ToastAndroid.SHORT);
+      return;
+    } else if(this.validatePasswordLength()) {
+      ToastAndroid.show("Panjang password minimal 6 karakter", ToastAndroid.SHORT);
       return;
     }
 
-    const postData = {
+    const putData = {
       name: this.state.name,
-      type: this.state.type
+      email: this.state.email,
+      password: this.state.password
     };
 
-    const postHeader = {
+    const putHeader = {
       headers: {
         Authorization: `Bearer ${auth.access_token}`
       }
     };
 
-    axios.post(CATEGORIES_URL, postData, postHeader)
+    const id = navigation.getParam("id");
+
+    axios.put(`${USER_URL}/${id}`, putData, putHeader)
     .then(response => {
       navigation.goBack();
-      ToastAndroid.show("Anda berhasil menambahkan kategori", ToastAndroid.SHORT);
+      ToastAndroid.show("Anda berhasil mengubah pengurus", ToastAndroid.SHORT);
     })
     .catch(error => {
       if(!error.response) {
@@ -81,11 +111,11 @@ class EntryCat extends Component {
             </Button>
           </Left>
           <Body style={{ flex: 3 }}>
-            <Title>Tambah Kategori</Title>
+            <Title>Ubah Pengurus</Title>
           </Body>
           <Right style={{ flex: 2 }}>
             <Button
-              onPress={this.onPost}
+              onPress={this.onUpdate}
               hasText
               transparent
             >
@@ -96,30 +126,39 @@ class EntryCat extends Component {
         <Content>
           <Card style={styles.card}>
             <CardItem>
+              <Icon name="person" style={styles.icon} />
               <Item>
                 <Input
                   autoCapitalize="none"
-                  placeholder="Nama Kategori"
+                  placeholder="Nama"
                   value={this.state.name}
                   onChangeText={name => this.setState({name})}
                 />
               </Item>
             </CardItem>
             <CardItem>
-              <Left style={{ flex: 0 }}>
-                <Radio
-                  onPress={() => this.setState({ type: 1 })}
-                  selected={this.state.type === 1}
+              <Icon name="mail" style={styles.icon} />
+              <Item>
+                <Input
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  placeholder="Email"
+                  value={this.state.email}
+                  onChangeText={email => this.setState({email})}
                 />
-                <Text>Pemasukan</Text>
-              </Left>
-              <Left style={{ marginLeft: 15 }}>
-                <Radio
-                  onPress={() => this.setState({ type: 2 })}
-                  selected={this.state.type === 2}
+              </Item>
+            </CardItem>
+            <CardItem>
+              <Icon name="lock" style={styles.icon} />
+              <Item>
+                <Input
+                  autoCapitalize="none"
+                  placeholder="Password"
+                  value={this.state.password}
+                  secureTextEntry
+                  onChangeText={password => this.setState({password})}
                 />
-                <Text>Pengeluaran</Text>
-              </Left>
+              </Item>
             </CardItem>
           </Card>
         </Content>
@@ -132,12 +171,16 @@ const styles = StyleSheet.create({
   card: {
     marginTop: 0,
     marginBottom: 15
+  },
+  icon: {
+    width: 30,
+    color: "#777"
   }
 });
 
 const mapStateToProps = state => ({
-  categories: state.categories,
-  auth: state.auth
+  auth: state.auth,
+  user: state.user
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -147,4 +190,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(EntryCat);
+)(EditUser);

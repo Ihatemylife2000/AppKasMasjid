@@ -9,15 +9,10 @@ import {
   Right,
   Body
 } from "native-base";
-import {
-  TouchableNativeFeedback,
-  DatePickerAndroid,
-  ToastAndroid
-} from "react-native";
-import dateFormat from "dateformat";
+import { ToastAndroid } from "react-native";
+import { connect } from "react-redux";
 import RNFetchBlob from "rn-fetch-blob";
 import ITab from "./ITab";
-import { connect } from "react-redux";
 import "intl";
 import "intl/locale-data/jsonp/id";
 
@@ -43,8 +38,8 @@ class DetailReport extends Component {
 
     const balance = filtered.reduce((a, b) => {
       const cat = categories.find(cat => cat.id === b.categories_id);
-      const amount = cat.type === 1 ? b.amount : -b.amount;
-      return amount + a;
+      const value = cat.type === 1 ? b.value : -b.value;
+      return value + a;
     }, 0);
 
     return balance;
@@ -62,17 +57,20 @@ class DetailReport extends Component {
       ToastAndroid.show("Tidak ada transaksi", ToastAndroid.SHORT);
       return;
     }
+    const sorted = filtered.sort((a, b) => {
+      return new Date(a.date) - new Date(b.date)
+    });
     const month_yearf = month_year.format(target);
-    const path = `${RNFetchBlob.fs.dirs.DownloadDir}/Laporan/${month_yearf}.csv`;
+    const path = `${RNFetchBlob.fs.dirs.DownloadDir}/Laporan - ${month_yearf}.csv`;
     const header = `${month_yearf}\n\nTanggal,Kategori,Masuk,Keluar,Saldo,Catatan\n`;
-    let balance = this.getOpenBalance();
-    const first = `1,Saldo Awal,-,-,${balance},\n`;
     let totalIncome = 0;
     let totalExpense = 0;
-    const row = filtered.map(item => {
+    let balance = this.getOpenBalance();
+    const first = `1,Saldo Awal,-,-,${balance},\n`;
+    const row = sorted.map(item => {
       const cat = categories.find(cat => cat.id === item.categories_id);
-      const income = cat.type === 1 ? item.amount : "-";
-      const expense = cat.type === 2 ? item.amount : "-";
+      const income = cat.type === 1 ? item.value : "-";
+      const expense = cat.type === 2 ? item.value : "-";
       const description = item.description || "";
       const date = day.format(new Date(item.date));
       if(cat.type === 1) {

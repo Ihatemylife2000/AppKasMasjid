@@ -14,10 +14,10 @@ import {
   CardItem
 } from "native-base";
 import { StyleSheet, Alert, ToastAndroid } from "react-native";
-import dateFormat from "dateformat";
-import axios from "axios";
 import { TRANSACTIONS_URL } from "../Config/URLs";
+import { logout } from "../Actions";
 import { connect } from "react-redux";
+import axios from "axios";
 import "intl";
 import "intl/locale-data/jsonp/id";
 
@@ -45,7 +45,7 @@ class DetailTrans extends Component {
   }
 
   onRemove = () => {
-    const { navigation, auth } = this.props;
+    const { navigation, auth, logout } = this.props;
     const deleteHeader = {
       headers: {
         Authorization : `Bearer ${auth.access_token}`
@@ -61,17 +61,21 @@ class DetailTrans extends Component {
     .catch(error => {
       if(!error.response) {
         ToastAndroid.show("Tidak bisa terhubung ke server", ToastAndroid.SHORT);
+      } else if(error.response.status === 401) {
+        ToastAndroid.show("Autentikasi gagal", ToastAndroid.SHORT);
+        logout();
       }
     });
   };
 
   render() {
-    const { navigation, transactions, categories } = this.props;
+    const { navigation, transactions, categories, user } = this.props;
     const id = navigation.getParam("id");
     const data = transactions.find(data => data.id === id);
     if(!data)
       return null;
     const cat = categories.find(cat => cat.id === data.categories_id);
+    const usr = user.find(usr => usr.id === data.users_id);
     return (
       <Container>
         <Header>
@@ -123,7 +127,7 @@ class DetailTrans extends Component {
                   color: cat.type === 1 ? "#1F88A7" : "#B9264F"
                 }}
               >
-                {l10nIDR.format(data.amount)}
+                {l10nIDR.format(data.value)}
               </Text>
             </CardItem>
             {data.description &&
@@ -147,6 +151,13 @@ class DetailTrans extends Component {
                 </Text>
               </Left>
             </CardItem>
+            {usr &&
+              <CardItem>
+                <Left>
+                  <Icon name="person" style={styles.icon} />
+                  <Text>{usr.name}</Text>
+                </Left>
+              </CardItem>}
           </Card>
         </Content>
       </Container>
@@ -156,11 +167,8 @@ class DetailTrans extends Component {
 
 const styles = StyleSheet.create({
   card: {
-    flex: 0,
     marginTop: 0,
-    marginBottom: 15,
-    marginLeft: 0,
-    marginRight: 0
+    marginBottom: 15
   },
   icon: {
     width: 30,
@@ -171,10 +179,15 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
   transactions: state.transactions,
   categories: state.categories,
+  user: state.user,
   auth: state.auth
+});
+
+const mapDispatchToProps = dispatch => ({
+  logout: () => dispatch(logout())
 });
 
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(DetailTrans);
