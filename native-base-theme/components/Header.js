@@ -369,7 +369,7 @@ export default (variables = variable) => {
            alignItems: "center",
            justifyContent: "center",
            marginLeft: 10,
-           padding: 0,
+           padding: 0
         },
         "NativeBase.Icon": {
           color: variables.toolbarBtnColor
@@ -406,7 +406,7 @@ export default (variables = variable) => {
     shadowOffset:
       platformStyle === "material" ? { width: 0, height: 2 } : undefined,
     shadowOpacity: platformStyle === "material" ? 0.2 : undefined,
-    shadowRadius: platformStyle === "material" ? 5 : undefined,
+    shadowRadius: platformStyle === "material" ? 1.2 : undefined,
     top: 0,
     left: 0,
     right: 0

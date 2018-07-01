@@ -27,9 +27,9 @@ const l10nIDR = new Intl.NumberFormat("id-ID", {
   currency: "IDR"
 });
 
-const day = new Intl.DateTimeFormat('id-ID', { day: "2-digit" });
-const weekday = new Intl.DateTimeFormat('id-ID', { weekday: "long" });
-const month = new Intl.DateTimeFormat('id-ID', {
+const day = new Intl.DateTimeFormat("id-ID", { day: "2-digit" });
+const weekday = new Intl.DateTimeFormat("id-ID", { weekday: "long" });
+const month = new Intl.DateTimeFormat("id-ID", {
   month: "long",
   year: "numeric"
 })
